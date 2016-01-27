@@ -1,0 +1,162 @@
+
+/* color palette: http://paletton.com/#uid=75B0Z0kllll5gSNdkuCtmc3Lc2K */
+body {
+    background-image: url('img/noise.png');
+    background-color: #01050f;
+    color: #bababa;
+    font-family: Sans;
+    display: flex;
+    justify-content: space-around;
+}
+
+.wrapper {
+    width: 700px;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#header .box {
+    margin-bottom: 0px;
+}
+
+h1, h2 {
+    margin: 0px;
+}
+
+.box {
+    background-color: #0b1b40;
+    background-image: url('img/noise.png');
+    margin: 10px 0px;
+    padding: 10px;
+    box-shadow: 0px 0px 10px 0px black;
+}
+
+.columns {
+    display: flex;
+    align-items: center;
+    margin: 5px 0px;
+}
+.columns:first-child {
+    margin-top: 0px;
+}
+.columns:last-child {
+    margin-bottom: 0px;
+}
+
+.columns * {
+    margin: 0px 10px;
+}
+.columns *:first-child {
+    margin-left: 0px;
+}
+.columns *:last-child {
+    margin-right: 0px;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+#current_status {
+    text-align: center;
+    font-size: 200%;
+    font-weight: bold;
+    padding: 10px;
+}
+
+#current_status.closed {
+    color: #a7383e;
+}
+#current_status.private {
+    color: #6779a3;
+}
+#current_status.public {
+    color: #378b2e;
+}
+
+span.status {
+    border-radius: 5px;
+    padding: 0px 3px;
+    color: white;
+}
+
+span.status_closed {
+    background-color: #a7383e;
+}
+span.status_private {
+    background-color: #6779a3;
+}
+span.status_public {
+    background-color: #378b2e;
+}
+
+#current_status_note {
+    background-color: #01050f;
+    padding: 5px;
+    box-shadow: 0px 0px 10px 0px black inset;
+    font-size: 130%;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+#current_status_details th {
+    text-align: right;
+}
+
+#status_change_buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+#status_change_buttons input {
+    margin: 0px 5px;
+    border-width: 0px;
+    color: white;
+    font-size: 130%;
+    background-color: #378b2e;
+}
+#status_change_buttons input+input {
+    background-color: #6779a3;
+}
+#status_change_buttons input+input+input {
+    background-color: #a7383e;
+}
+
+#status_change_note {
+    width: 100%;
+}
+
+.label {
+    font-weight: bold;
+}
+
+#log {
+    border-collapse: collapse;
+    font-family: monospace;
+}
+#log th {
+    /*text-align: left;*/
+}
+#log td {
+    padding: 5px;
+}
+#log tr td {
+    border-top: 1px solid #01050F;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+#log tr td:first-child {
+    text-align: right;
+}
+#log tr td:nth-child(3) {
+    text-align: center;
+}
+#log tr td:last-child {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+

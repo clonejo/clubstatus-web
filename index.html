@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>CCCAC-Status</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <!--<link rel="stylesheet" type="text/css" href="cccac.css" />-->
+        <script src="jquery.js"></script>
+        <script src="moment.js"></script>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div id="header">
+            <h1>CCCAC-Clubstatus</h1>
+            <div class="box" style="display: inline-block">
+                username: <input id="username" type="text" placeholder="Hans Acker"
+                                                           size="15" minlength="1" maxlength="15"/>
+            </div>
+            </div>
+            <div class="box">
+                <div class="columns">
+                    <div id="current_status"></div>
+                    <table id="current_status_details">
+                        <tr>
+                            <th>since:</th>
+                            <td id="current_status_changed"></td>
+                        </tr>
+                        <tr>
+                            <th>last update:</th>
+                            <td id="current_status_updated"></td></tr>
+                        <tr>
+                            <th>currently present:</th>
+                            <td id="current_presence">Ferdinand Nord (3h), Hermine Acker (5min)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="current_status_note_row" class="columns">
+                    <span class="label">note:</span>
+                    <div id="current_status_note" class="column grow"></div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="columns">
+                    <div class="column label">change status:</div>
+                    <div id="status_change_buttons" class="column grow">
+                        <input id="status_change_public"  type="submit" value="public" />
+                        <input id="status_change_private" type="submit" value="private" />
+                        <input id="status_change_closed"  type="submit" value="closed" />
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column label">note:</div>
+                    <div class="column grow">
+                        <input id="status_change_note" type="text" placeholder="Will start preparing a meal soon-ish …" maxlength="80" />
+                    </div>
+                    <div class="column">
+                        <input id="status_change_note_clear" type="submit" value="x" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2>Log</h2>
+                <table id="log">
+                    <thead>
+                        <tr><th>#</th><th>Time</th><th>Status</th><th>User</th><th>Note</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
