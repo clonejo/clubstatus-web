@@ -76,6 +76,7 @@ var update = function() {
 }
 
 var status_change = function(status) {
+    $("#status_change_box").css("visibility", "hidden");
     var user = $("#username").val();
     if (user == "") {
         user = "Hans Acker";
@@ -91,6 +92,7 @@ var status_change = function(status) {
         method: "PUT",
         success: function(res, status, jqxhr) {
             update();
+            $("#status_change_box").css("visibility", "visible");
         }
     });
 }
