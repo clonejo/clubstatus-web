@@ -3,18 +3,19 @@
         <meta charset="utf-8" />
         <title>Hackerspace Status</title>
         <link rel="stylesheet" type="text/css" href="style.css" />
+        <link rel="stylesheet" type="text/css" href="style-responsive.css" />
         <script src="js/jquery.js"></script>
         <script src="js/moment.js"></script>
         <script src="js/script.js"></script>
     </head>
     <body>
-        <div class="wrapper">
+        <div class="wrapper wrapper-top">
             <div id="header">
-            <h1>Space Status</h1>
-            <div class="box" style="display: inline-block">
-                username: <input id="username" type="text" placeholder="Hans Acker"
-                                                           size="15" minlength="1" maxlength="15"/>
-            </div>
+                <h1>Space Status</h1>
+                <div class="box" style="display: inline-block">
+                    username: <input id="username" type="text" placeholder="Hans Acker"
+                                                               size="15" minlength="1" maxlength="15"/>
+                </div>
             </div>
             <div class="box">
                 <div class="columns">
@@ -59,7 +60,9 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="wrapper wrapper-bottom">
             <div class="box">
                 <h2>Log</h2>
                 <table id="log">
