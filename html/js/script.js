@@ -6,6 +6,7 @@ var api = "/api";
 // am/pm -> 24h and short fromNow
 moment.locale('en-24h', {
     longDateFormat: {
+        L: "YYYY-MM-DD",
         LT: "HH:mm",
         LTS: "HH:mm:ss"
     },
