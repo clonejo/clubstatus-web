@@ -175,7 +175,7 @@ var parse_dates = function(from_str, to_str) {
 }
 
 var announcement_add = function() {
-    $("announcement_add_box").css("visibility", "hidden");
+    $("#announcement_add_box").css("visibility", "hidden");
     var user = $("#username").val();
     if (user == "") {
         user = "Hans Acker";
