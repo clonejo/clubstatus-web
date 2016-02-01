@@ -138,34 +138,42 @@ span.status_public {
     width: 100%;
 }
 
+#announcement_add_box input[type=text] {
+    width: 100%;
+}
+
 .label {
     font-weight: bold;
 }
 
-#log {
+table.monospace {
     border-collapse: collapse;
     font-family: monospace;
 }
-#log th {
+table.monospace th {
     /*text-align: left;*/
 }
-#log td {
+table.monospace td {
     padding: 5px;
 }
-#log tr td {
+table.monospace tr td {
     border-top: 1px solid #01050F;
     white-space: nowrap;
     vertical-align: top;
 }
 
-#log tr td:first-child {
+#log td:nth-child(1), #announcements td:nth-child(1) {
     text-align: right;
 }
-#log tr td:nth-child(3) {
+#log td:nth-child(3), #announcements td:nth-child(6) {
     text-align: center;
 }
-#log tr td:last-child {
+#log td:nth-child(5), #announcements td:nth-child(5) {
     white-space: pre-wrap;
     word-break: break-all;
+}
+
+#announcements tr.begun td:nth-child(2) {
+    color: #6779a3;
 }
 

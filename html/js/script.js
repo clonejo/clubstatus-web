@@ -64,7 +64,7 @@ var update = function() {
                 row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
                 row += '<td><span class="status status_' + action.status + '">' + action.status + "</span></td>";
                 row += "<td>by " + action.user + "</td>";
-                row += '<td colspan="4" class="note">';
+                row += '<td class="note">';
                 if (action.note != "") {
                     row += '“' + $("<div/>").text(action.note).html() + "”";
                 }
@@ -73,6 +73,41 @@ var update = function() {
                 log_table.prepend(row);
             }
         });
+    });
+
+    $.getJSON(api + "/v0/announcement/current", function(o) {
+        var announcements_table = $("#announcements tbody");
+        announcements_table.empty();
+        $.each(o.actions, function(index, action) {
+            var from = moment.unix(action.from);
+            var to = moment.unix(action.to);
+            if (from.isAfter()) {
+                var row = '<tr>';
+            } else {
+                var row = '<tr class="begun">';
+                console.log("after");
+            }
+            row += "<td>" + action.id + "</td>";
+            row += "<td>" + from.format("ddd, YYYY-MM-DD, LT") + "</td>";
+            row += "<td>" + to.format("ddd, YYYY-MM-DD, LT") + "</td>";
+            row += "<td>by " + action.user + "</td>";
+            row += '<td class="note">';
+            if (action.note != "") {
+                row += '“' + $("<div/>").text(action.note).html() + "”";
+            }
+            row += '</td>';
+            if (action.public) {
+                row += "<td>✔</td>";
+            }{
+                row += "<td>&nbsp;</td>";
+            }
+            row += "</tr>";
+            announcements_table.append(row);
+        });
+        if (o.actions.length == 0) {
+            var row = '<tr><td colspan="6">no current or upcoming announcements</td></tr>';
+            announcements_table.append(row);
+        }
     });
 }
 
@@ -96,7 +131,74 @@ var status_change = function(status) {
             $("#status_change_box").css("visibility", "visible");
         }
     });
+};
+
+var parse_dates = function(from_str, to_str) {
+    from_str = from_str.trim();
+    to_str   = to_str.trim();
+    var from_date_included = from_str.indexOf(" ") > -1;
+    var to_date_included   = to_str.indexOf(" ") > -1;
+    var formats = [
+        "H",
+        "H:mm",
+        "D.M. H:mm",
+        "D.M.YY H:mm",
+        "D.M.YYYY H:mm",
+        "YYYY-M-D H:mm"
+    ];
+    var now  = moment();
+    if (from_str == "now" || from_str == "") {
+        var from = moment();
+    } else {
+        var from = moment(from_str, formats);
+    }
+    if (to_str == "now" || to_str == "") {
+        var to = moment();
+    } else {
+        var to   = moment(to_str  , formats);
+    }
+    if (!from_date_included && from.isBefore(now)) {
+        from.add(1, "days");
+    }
+    if (!to_date_included) {
+        to.date(from.date());
+        to.month(from.month());
+        to.year(from.year());
+        if (to.isBefore(from)) {
+            to.add(1, "days");
+        }
+    }
+    return [
+        parseInt(from.format("X"), 10),
+        parseInt(to.format("X")  , 10)
+    ];
 }
+
+var announcement_add = function() {
+    $("announcement_add_box").css("visibility", "hidden");
+    var user = $("#username").val();
+    if (user == "") {
+        user = "Hans Acker";
+    }
+    var note = $("#announcement_add_note").val();
+    var time_range = parse_dates($("#announcement_add_from").val(), $("#announcement_add_to").val());
+    $.ajax(api + "/v0", {
+        data: JSON.stringify({
+            type: "announcement",
+            method: "new",
+            user: user,
+            from: time_range[0],
+            to: time_range[1],
+            note: note
+        }),
+        method: "PUT",
+        success: function(res, status, jqxhr) {
+            update();
+            $("#announcement_add_box input[type=text]").val("");
+            $("#announcement_add_box").css("visibility", "visible");
+        }
+    });
+};
 
 $("#status_change_public" ).click(function(ev) { status_change("public" ); });
 $("#status_change_private").click(function(ev) { status_change("private"); });
@@ -105,6 +207,8 @@ $("#status_change_closed" ).click(function(ev) { status_change("closed" ); });
 $("#status_change_note_clear").click(function(ev) {
     $("#status_change_note").val("");
 });
+
+$("#announcement_add_submit").click(function(ev) { announcement_add() });
 
 $("#username").val(localStorage.getItem("username"));
 $("#username").focusout(function() {

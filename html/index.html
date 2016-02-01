@@ -60,12 +60,38 @@
                     </div>
                 </div>
             </div>
+
+            <div class="box">
+                <h2>Announcements</h2>
+                <table id="Announcements" class="monospace">
+                    <thead>
+                        <tr><th>#</th><th>From</th><th>To</th><th>User</th><th>Note</th><th>Public</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="announcement_add_box" class="box">
+                <div class="columns">
+                    <div class="column label" style="white-space: nowrap;">new announcement:</div>
+                    <div class="column">from:</div>
+                    <div class="column"><input id="announcement_add_from" type="text" /></div>
+                    <div class="column">to:</div>
+                    <div class="column"><input id="announcement_add_to"   type="text" /></div>
+                </div>
+                <div class="columns">
+                    <div class="column">note:</div>
+                    <input id="announcement_add_note" type="text" maxlength="80"
+                           placeholder="Talk by Henry Acker: Securing your country in the Cyber Era" />
+                    <input id="announcement_add_submit" type="submit" value="add" />
+                </div>
+            </div>
         </div>
 
         <div class="wrapper wrapper-bottom">
             <div class="box">
                 <h2>Log</h2>
-                <table id="log">
+                <table id="log" class="monospace">
                     <thead>
                         <tr><th>#</th><th>Time</th><th>Status</th><th>User</th><th>Note</th>
                     </thead>
