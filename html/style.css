@@ -35,6 +35,10 @@ h1, h2 {
     box-shadow: 0px 0px 10px 0px black;
 }
 
+.box.dont_grow {
+    display: inline-block;
+}
+
 .box:last-child {
     margin-bottom: 0px;
 }

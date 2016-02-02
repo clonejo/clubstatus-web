@@ -28,6 +28,8 @@ moment.locale('en-24h', {
 });
 
 var update = function() {
+    console.log("updating");
+
     $.getJSON(api + "/v0/status/current", function(o) {
         var current_status = $("#current_status");
         current_status.text(o.last.status);
@@ -88,7 +90,6 @@ var update = function() {
                 var row = '<tr>';
             } else {
                 var row = '<tr class="begun">';
-                console.log("after");
             }
             row += "<td>" + action.id + "</td>";
             row += "<td>" + from.calendar(null, calendarFormats) + "</td>";
@@ -213,10 +214,33 @@ $("#status_change_note_clear").click(function(ev) {
 
 $("#announcement_add_submit").click(function(ev) { announcement_add() });
 
-$("#username").val(localStorage.getItem("username"));
-$("#username").focusout(function() {
-    localStorage.setItem("username", $("#username").val());
-});
+var linkToLocalStorage = function(key, inputElem) {
+    var inputElem = $(inputElem);
+    inputElem.val(localStorage.getItem(key));
+    inputElem.focusout(function() {
+        localStorage.setItem(key, inputElem.val());
+    });
+};
+var linkToLocalStorageCheckbox = function(key, inputElem) {
+    var inputElem = $(inputElem);
+    inputElem.prop("checked", JSON.parse(localStorage.getItem(key)));
+    inputElem.change(function() {
+        localStorage.setItem(key, inputElem.prop("checked"));
+    });
+};
+
+linkToLocalStorage("username", "#username");
+linkToLocalStorageCheckbox("auto_refresh", "#auto_refresh");
+
+var auto_refresher;
+var update_auto_refresh = function() {
+    clearInterval(auto_refresher);
+    if (JSON.parse(localStorage.getItem("auto_refresh"))) {
+        auto_refresher = setInterval(update, 5*60*1000);
+    }
+};
+$("#auto_refresh").change(update_auto_refresh);
+update_auto_refresh();
 
 update();
 //setInterval(update, 1000);
