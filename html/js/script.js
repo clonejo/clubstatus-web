@@ -92,7 +92,11 @@ var update = function() {
                 var row = '<tr class="begun">';
             }
             row += "<td>" + action.id + "</td>";
-            row += "<td>" + from.calendar(null, calendarFormats) + "</td>";
+            row += '<td>';
+            if (!from.isAfter()) {
+                row += '<i class="fa fa-play"></i> ';
+            }
+            row += from.calendar(null, calendarFormats) + "</td>";
             row += "<td>" + to.calendar(null, calendarFormats) + "</td>";
             row += "<td>by " + action.user + "</td>";
             row += '<td class="note">';
