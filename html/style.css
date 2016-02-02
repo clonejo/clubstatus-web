@@ -162,7 +162,10 @@ table.monospace tr td {
     vertical-align: top;
 }
 
-#log td:nth-child(1), #announcements td:nth-child(1) {
+#log td:nth-child(1),
+#announcements td:nth-child(1),
+#announcements td:nth-child(2),
+#announcements td:nth-child(3) {
     text-align: right;
 }
 #log td:nth-child(3), #announcements td:nth-child(6) {

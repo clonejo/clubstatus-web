@@ -79,6 +79,9 @@ var update = function() {
         var announcements_table = $("#announcements tbody");
         announcements_table.empty();
         $.each(o.actions, function(index, action) {
+            var calendarFormats = {
+                sameElse: "ddd, YYYY-MM-DD, LT"
+            };
             var from = moment.unix(action.from);
             var to = moment.unix(action.to);
             if (from.isAfter()) {
@@ -88,8 +91,8 @@ var update = function() {
                 console.log("after");
             }
             row += "<td>" + action.id + "</td>";
-            row += "<td>" + from.format("ddd, YYYY-MM-DD, LT") + "</td>";
-            row += "<td>" + to.format("ddd, YYYY-MM-DD, LT") + "</td>";
+            row += "<td>" + from.calendar(null, calendarFormats) + "</td>";
+            row += "<td>" + to.calendar(null, calendarFormats) + "</td>";
             row += "<td>by " + action.user + "</td>";
             row += '<td class="note">';
             if (action.note != "") {
