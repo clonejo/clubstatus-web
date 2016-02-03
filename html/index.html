@@ -2,12 +2,13 @@
     <head>
         <meta charset="utf-8" />
         <title>Hackerspace Status</title>
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <link rel="stylesheet" type="text/css" href="style-responsive.css" />
-        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
         <script src="js/jquery.js"></script>
         <script src="js/moment.js"></script>
         <script src="js/script.js"></script>
+        <meta name="viewport" content="width=720" />
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <link rel="stylesheet" type="text/css" href="style-responsive.css" />
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
     </head>
     <body>
         <div class="wrapper wrapper-top">
@@ -99,8 +100,13 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="box dont_grow">
-                <label><input id="auto_refresh" type="checkbox" />auto refresh every 5min</label>
+            <div class="row">
+                <div class="box dont_grow">
+                    <label><input id="auto_refresh" type="checkbox" />auto refresh every 5min</label>
+                </div>
+                <div class="box dont_grow button" id="fullscreen">
+                    <i class="fa fa-arrows-alt fa-2x"></i>
+                </div>
             </div>
         </div>
     </body>

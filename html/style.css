@@ -43,6 +43,14 @@ h1, h2 {
     margin-bottom: 0px;
 }
 
+.row {
+    display: flex;
+}
+
+.row .box {
+    margin: 10px 10px;
+}
+
 .columns {
     display: flex;
     align-items: center;
@@ -182,5 +190,14 @@ table.monospace tr td {
 
 #announcements tr.begun td:nth-child(2) {
     color: #6779a3;
+}
+
+.button {
+    cursor: pointer;
+}
+
+body:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
 }
 
