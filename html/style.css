@@ -49,6 +49,7 @@ h1, h2 {
 
 .box.loading {
     filter: opacity(50%) grayscale(60%) blur(0.25px);
+    -webkit-filter: opacity(50%) grayscale(60%) blur(0.25px);
 }
 
 .row {
