@@ -14,12 +14,13 @@
         <div class="wrapper wrapper-top">
             <div id="header">
                 <h1>Space Status</h1>
+                <i id="loading" class="fa fa-spinner fa-2x fa-spin"></i>
                 <div class="box" style="display: inline-block">
                     username: <input id="username" type="text" placeholder="Hans Acker"
                                                                size="15" minlength="1" maxlength="15"/>
                 </div>
             </div>
-            <div class="box">
+            <div id="status_box" class="box loading">
                 <div class="columns">
                     <div id="current_status"></div>
                     <table id="current_status_details">
@@ -42,7 +43,7 @@
                 </div>
             </div>
 
-            <div id="status_change_box" class="box">
+            <div id="status_change_box" class="box loading">
                 <div class="columns">
                     <div class="column label">change status:</div>
                     <div id="status_change_buttons" class="column grow">
@@ -63,7 +64,7 @@
                 </div>
             </div>
 
-            <div class="box">
+            <div id="announcement_box" class="box loading">
                 <h2>Announcements</h2>
                 <table id="Announcements" class="monospace">
                     <thead>
@@ -91,7 +92,7 @@
         </div>
 
         <div class="wrapper">
-            <div class="box">
+            <div id="log_box" class="box loading">
                 <h2>Log</h2>
                 <table id="log" class="monospace">
                     <thead>

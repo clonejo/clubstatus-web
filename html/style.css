@@ -23,6 +23,10 @@ body {
     margin-bottom: 0px;
 }
 
+#loading {
+    color: white;
+}
+
 h1, h2 {
     margin: 0px;
 }
@@ -35,12 +39,16 @@ h1, h2 {
     box-shadow: 0px 0px 10px 0px black;
 }
 
+.box:last-child {
+    margin-bottom: 0px;
+}
+
 .box.dont_grow {
     display: inline-block;
 }
 
-.box:last-child {
-    margin-bottom: 0px;
+.box.loading {
+    filter: opacity(50%) grayscale(60%) blur(0.25px);
 }
 
 .row {
@@ -49,6 +57,10 @@ h1, h2 {
 
 .row .box {
     margin: 10px 10px;
+}
+
+.row .box:first-child {
+    margin-left: 0px;
 }
 
 .columns {

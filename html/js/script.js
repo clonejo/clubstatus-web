@@ -29,95 +29,107 @@ moment.locale('en-24h', {
 
 var update = function() {
     console.log("updating");
+    $("#loading").css("visibility", "visible");
+    $("#status_box, #status_change_box, #announcement_box, #log_box").addClass("loading");
 
-    $.getJSON(api + "/v0/status/current", function(o) {
-        var current_status = $("#current_status");
-        current_status.text(o.last.status);
-        if (o.last.status === "closed") {
-            current_status.removeClass();
-            current_status.addClass("closed");
-        } else if (o.last.status === "private") {
-            current_status.removeClass();
-            current_status.addClass("private");
-        } else if (o.last.status === "public") {
-            current_status.removeClass();
-            current_status.addClass("public");
-        }
-        $("#current_status_note").text(o.last.note);
-        if (o.last.note == "") {
-            $("#current_status_note_row").css("display", "none");
-        } else {
-            $("#current_status_note_row").css("display", "flex");
-        }
-        $("#status_change_note").val(o.last.note);
-        var changed = moment.unix(o.changed.time);
-        var updated = moment.unix(o.last.time)
-            $("#current_status_changed").text(changed.calendar() + " by " + o.changed.user + " (" + changed.fromNow(true) + ")");
-        $("#current_status_updated").text(updated.calendar() + " by " + o.last.user + " (" + updated.fromNow(true) + ")");
-    });
+    var requests = [
+        $.getJSON(api + "/v0/status/current", function(o) {
+            var current_status = $("#current_status");
+            current_status.text(o.last.status);
+            if (o.last.status === "closed") {
+                current_status.removeClass();
+                current_status.addClass("closed");
+            } else if (o.last.status === "private") {
+                current_status.removeClass();
+                current_status.addClass("private");
+            } else if (o.last.status === "public") {
+                current_status.removeClass();
+                current_status.addClass("public");
+            }
+            $("#current_status_note").text(o.last.note);
+            if (o.last.note == "") {
+                $("#current_status_note_row").css("display", "none");
+            } else {
+                $("#current_status_note_row").css("display", "flex");
+            }
+            $("#status_change_note").val(o.last.note);
+            var changed = moment.unix(o.changed.time);
+            var updated = moment.unix(o.last.time)
+                $("#current_status_changed").text(changed.calendar() + " by " + o.changed.user + " (" + changed.fromNow(true) + ")");
+            $("#current_status_updated").text(updated.calendar() + " by " + o.last.user + " (" + updated.fromNow(true) + ")");
+            $("#status_box, #status_change_box").removeClass("loading");
+        }),
 
-    $.getJSON(api + "/v0/all", function(o) {
-        var log_table = $("#log tbody");
-        log_table.empty();
-        $.each(o.actions, function(index, action) {
-            if (action.type == "status") {
-                var row = '<tr>';
-                row += "<td>" + action.id + "</td>";
-                row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
-                row += '<td><span class="status status_' + action.status + '">' + action.status + "</span></td>";
+        $.getJSON(api + "/v0/status", function(o) {
+            var log_table = $("#log tbody");
+            log_table.empty();
+            $.each(o.actions, function(index, action) {
+                if (action.type == "status") {
+                    var row = '<tr>';
+                    row += "<td>" + action.id + "</td>";
+                    row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
+                    row += '<td><span class="status status_' + action.status + '">' + action.status + "</span></td>";
+                    row += "<td>by " + action.user + "</td>";
+                    row += '<td class="note">';
+                    if (action.note != "") {
+                        row += '“' + $("<div/>").text(action.note).html() + "”";
+                    }
+                    row += '</td>';
+                    row += "</tr>";
+                    log_table.prepend(row);
+                }
+            });
+            $("#log_box").removeClass("loading");
+        }),
+
+        $.getJSON(api + "/v0/announcement/current", function(o) {
+            var announcements_table = $("#announcements tbody");
+            announcements_table.empty();
+            $.each(o.actions, function(index, action) {
+                var calendarFormats = {
+                    sameElse: "ddd, YYYY-MM-DD, LT"
+                };
+                var from = moment.unix(action.from);
+                var to = moment.unix(action.to);
+                if (from.isAfter()) {
+                    var row = '<tr>';
+                } else {
+                    var row = '<tr class="begun">';
+                }
+                row += "<td>" + action.aid + "</td>";
+                row += '<td>';
+                if (!from.isAfter()) {
+                    row += '<i class="fa fa-play"></i> ';
+                }
+                row += from.calendar(null, calendarFormats) + "</td>";
+                row += "<td>" + to.calendar(null, calendarFormats) + "</td>";
                 row += "<td>by " + action.user + "</td>";
                 row += '<td class="note">';
                 if (action.note != "") {
                     row += '“' + $("<div/>").text(action.note).html() + "”";
                 }
                 row += '</td>';
+                if (action.public) {
+                    row += "<td>✔</td>";
+                }{
+                    row += "<td>&nbsp;</td>";
+                }
                 row += "</tr>";
-                log_table.prepend(row);
+                announcements_table.append(row);
+            });
+            if (o.actions.length == 0) {
+                var row = '<tr><td colspan="6">no current or upcoming announcements</td></tr>';
+                announcements_table.append(row);
             }
-        });
+            $("#announcement_box").removeClass("loading");
+        })
+    ];
+    $.when.apply($, requests).then(function() {
+        $("#loading").css("visibility", "hidden");
     });
-
-    $.getJSON(api + "/v0/announcement/current", function(o) {
-        var announcements_table = $("#announcements tbody");
-        announcements_table.empty();
-        $.each(o.actions, function(index, action) {
-            var calendarFormats = {
-                sameElse: "ddd, YYYY-MM-DD, LT"
-            };
-            var from = moment.unix(action.from);
-            var to = moment.unix(action.to);
-            if (from.isAfter()) {
-                var row = '<tr>';
-            } else {
-                var row = '<tr class="begun">';
-            }
-            row += "<td>" + action.id + "</td>";
-            row += '<td>';
-            if (!from.isAfter()) {
-                row += '<i class="fa fa-play"></i> ';
-            }
-            row += from.calendar(null, calendarFormats) + "</td>";
-            row += "<td>" + to.calendar(null, calendarFormats) + "</td>";
-            row += "<td>by " + action.user + "</td>";
-            row += '<td class="note">';
-            if (action.note != "") {
-                row += '“' + $("<div/>").text(action.note).html() + "”";
-            }
-            row += '</td>';
-            if (action.public) {
-                row += "<td>✔</td>";
-            }{
-                row += "<td>&nbsp;</td>";
-            }
-            row += "</tr>";
-            announcements_table.append(row);
-        });
-        if (o.actions.length == 0) {
-            var row = '<tr><td colspan="6">no current or upcoming announcements</td></tr>';
-            announcements_table.append(row);
-        }
-    });
-}
+};
+// debug:
+$("#header h1").click(function() update());
 
 var status_change = function(status) {
     $("#status_change_box").css("visibility", "hidden");
