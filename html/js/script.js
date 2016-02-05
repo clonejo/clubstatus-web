@@ -188,10 +188,15 @@ var parse_dates = function(from_str, to_str) {
             to.add(1, "days");
         }
     }
-    return [
-        parseInt(from.format("X"), 10),
-        parseInt(to.format("X")  , 10)
-    ];
+    from_ret = parseInt(from.format("X"), 10),
+    to_ret   = parseInt(to.format("X")  , 10)
+    if (from_str == "now" || from_str == "") {
+        var from_ret = "now";
+    }
+    if (to_str == "now" || to_str == "") {
+        var to_ret = "now";
+    }
+    return [from_ret, to_ret];
 }
 
 var announcement_add = function() {
