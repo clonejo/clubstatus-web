@@ -129,7 +129,7 @@ var update = function() {
     });
 };
 // debug:
-$("#header h1").click(function() update());
+$("#header h1").click(function() { update() });
 
 var status_change = function(status) {
     $("#status_change_box").css("visibility", "hidden");
