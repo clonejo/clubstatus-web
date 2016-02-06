@@ -365,7 +365,7 @@ var auto_refresher;
 var update_auto_refresh = function() {
     clearInterval(auto_refresher);
     if (JSON.parse(localStorage.getItem("auto_refresh"))) {
-        auto_refresher = setInterval(update, 5*60*1000);
+        auto_refresher = setInterval(statuz.update, 5*60*1000);
     }
 };
 $("#auto_refresh").change(update_auto_refresh);
