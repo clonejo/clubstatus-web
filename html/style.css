@@ -163,7 +163,7 @@ span.status_public {
     width: 100%;
 }
 
-#announcement_add_box input[type=text] {
+#announcement_add_box input[type=text], #announcement_modify_box input[type=text] {
     width: 100%;
 }
 
@@ -203,6 +203,11 @@ table.monospace tr td {
 
 #announcements tr.begun td:nth-child(2) {
     color: #6779a3;
+}
+
+td.actions i {
+    color: white;
+    cursor: pointer;
 }
 
 .button {

@@ -68,10 +68,40 @@
                 <h2>Announcements</h2>
                 <table id="Announcements" class="monospace">
                     <thead>
-                        <tr><th>#</th><th>From</th><th>To</th><th>User</th><th>Note</th><th>Public</th></tr>
+                        <tr>
+                            <th>#</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>User</th>
+                            <th>Note</th>
+                            <th>Public</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+
+            <div id="announcement_modify_box" class="box" hidden>
+                <div class="columns">
+                    <input id="announcement_modify_aid" type="hidden" />
+                    <div class="column label" style="white-space: nowrap;">change announcement:</div>
+                    <div class="column">from:</div>
+                    <div class="column">
+                        <input id="announcement_modify_from" type="text" placeholder="now" />
+                    </div>
+                    <div class="column">to:</div>
+                    <div class="column">
+                        <input id="announcement_modify_to"   type="text" placeholder="now" />
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column">note:</div>
+                    <input id="announcement_modify_note" type="text" maxlength="80"
+                           placeholder="Talk by Henry Acker: Securing your country in the Cyber Era" />
+                    <input id="announcement_modify_submit" type="submit" value="update" />
+                    <input id="announcement_modify_cancel" type="submit" value="cancel" />
+                </div>
             </div>
 
             <div id="announcement_add_box" class="box">
