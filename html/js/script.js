@@ -104,35 +104,51 @@ statuz.update_status = function() {
         }
         $("#status_change_note").val(o.last.note);
         var changed = moment.unix(o.changed.time);
-        var updated = moment.unix(o.last.time)
-            $("#current_status_changed").text(changed.calendar() + " by " + o.changed.user + " (" + changed.fromNow(true) + ")");
-        $("#current_status_updated").text(updated.calendar() + " by " + o.last.user + " (" + updated.fromNow(true) + ")");
-        $("#status_box, #status_change_box").removeClass("loading");
+        var updated = moment.unix(o.last.time);
+        $("#current_status_changed").text(changed.calendar() + " by " + o.changed.user
+                + " (" + changed.fromNow(true) + ")");
+        $("#current_status_updated").text(updated.calendar() + " by " + o.last.user
+                + " (" + updated.fromNow(true) + ")");
+        $("#status_change_box").removeClass("loading");
+        // .loading is removed from #status_box when both update_status() and update_presence() are done
     });
 };
 
 statuz.update_log = function() {
-    $.getJSON(api + "/v0/status", function(o) {
+    $.getJSON(api + "/v0/status?count=30", function(o) {
         var log_table = $("#log tbody");
         log_table.empty();
         $.each(o.actions, function(index, action) {
-            if (action.type == "status") {
-                var row = '<tr>';
-                row += "<td>" + action.id + "</td>";
-                row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
-                row += '<td><span class="status status_' + action.status + '">' + action.status + "</span></td>";
-                row += "<td>by " + $("<div />").text(action.user).html() + "</td>";
-                row += '<td class="note">';
-                if (action.note != "") {
-                    row += '“' + $("<div/>").text(action.note).html() + "”";
-                }
-                row += '</td>';
-                row += "</tr>";
-                log_table.prepend(row);
+            var row = '<tr>';
+            row += "<td>" + action.id + "</td>";
+            row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
+            row += '<td><span class="status status_' + action.status + '">'
+                + action.status + "</span></td>";
+            row += "<td>by " + $("<div />").text(action.user).html() + "</td>";
+            row += '<td class="note">';
+            if (action.note != "") {
+                row += '“' + $("<div/>").text(action.note).html() + "”";
             }
+            row += '</td>';
+            row += "</tr>";
+            log_table.prepend(row);
         });
         $("#log_box").removeClass("loading");
     })
+};
+
+statuz.update_presence = function() {
+    $.getJSON(api + "/v0/presence?id=last", function(o) {
+        var current_presence = $("#current_presence");
+        var users = o.actions[0].users;
+        if (users.length == 0) {
+            current_presence.text("nobody");
+        } else {
+            current_presence.text(users.map(function(user) {
+                return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
+            }).join(", "));
+        }
+    });
 };
 
 statuz.update_announcements = function() {
@@ -198,10 +214,15 @@ statuz.update = function() {
     var requests = [
         statuz.update_status(),
         statuz.update_log(),
+        statuz.update_presence(),
         statuz.update_announcements()
     ];
     $.when.apply($, requests).then(function() {
         $("#loading").css("visibility", "hidden");
+    });
+
+    $.when.apply($, [requests[0], requests[2]]).then(function() {
+        $("#status_box").removeClass("loading");
     });
 };
 
