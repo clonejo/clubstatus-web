@@ -11,6 +11,7 @@ statuz.announcement_edit = function(aid) {
     $("#announcement_modify_from").val(moment.unix(action.from).format("L LT"));
     $("#announcement_modify_to"  ).val(moment.unix(action.to  ).format("L LT"));
     $("#announcement_modify_note").val(action.note);
+    $("#announcement_modify_public").prop("checked", action.public);
     $("#announcement_modify_box").slideDown();
 };
 
@@ -183,8 +184,8 @@ statuz.update_announcements = function() {
             }
             row += '</td>';
             if (action.public) {
-                row += "<td>✔</td>";
-            }{
+                row += '<td><i class="fa fa-check"></i></td>';
+            } else {
                 row += "<td>&nbsp;</td>";
             }
             row += '<td class="actions">';
@@ -302,6 +303,7 @@ var announcement_add = function() {
     }
     var note = $("#announcement_add_note").val();
     var time_range = parse_dates($("#announcement_add_from").val(), $("#announcement_add_to").val());
+    var public_ = $("#announcement_add_public").prop("checked");
     $.ajax(api + "/v0", {
         data: JSON.stringify({
             type: "announcement",
@@ -309,12 +311,14 @@ var announcement_add = function() {
             user: user,
             from: time_range[0],
             to: time_range[1],
+            public: public_,
             note: note
         }),
         method: "PUT",
         success: function(res, status, jqxhr) {
             statuz.update();
             $("#announcement_add_box input[type=text]").val("");
+            $("#announcement_add_public").prop("checked", false);
             $("#announcement_add_box").css("visibility", "visible");
         }
     });
@@ -329,7 +333,7 @@ var announcement_modify = function() {
     var note = $("#announcement_modify_note").val();
     var time_range = parse_dates($("#announcement_modify_from").val(), $("#announcement_modify_to").val());
     var aid = parseInt($("#announcement_modify_aid").val(), 10);
-    console.log("aid: " + aid);
+    var public_ = $("#announcement_modify_public").prop("checked");
     $.ajax(api + "/v0", {
         data: JSON.stringify({
             type: "announcement",
@@ -338,6 +342,7 @@ var announcement_modify = function() {
             user: user,
             from: time_range[0],
             to: time_range[1],
+            public: public_,
             note: note
         }),
         method: "PUT",
