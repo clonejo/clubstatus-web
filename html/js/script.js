@@ -146,7 +146,7 @@ statuz.update_presence = function() {
             current_presence.text("nobody");
         } else {
             current_presence.text(users.map(function(user) {
-                return user.name + "&nbsp;(" + moment.unix(user.since).fromNow(true) + ")";
+                return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
             }).join(", "));
         }
     });
