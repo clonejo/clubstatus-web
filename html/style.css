@@ -138,6 +138,7 @@ span.status_public {
 }
 #current_status_details th {
     text-align: right;
+    vertical-align: top;
 }
 
 #status_change_buttons {
