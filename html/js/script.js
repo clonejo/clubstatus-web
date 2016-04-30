@@ -170,7 +170,6 @@ statuz.update_announcements = function() {
             } else {
                 var row = '<tr>';
             }
-            row += "<td>" + action.aid + "</td>";
             row += '<td>';
             if (begun) {
                 row += '<i class="fa fa-play"></i> ';
