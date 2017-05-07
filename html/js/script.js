@@ -248,6 +248,21 @@ var status_change = function(status) {
     });
 };
 
+
+var from_to_examples = [
+    ["now", "23:42"],
+    ["20", "23:42"],
+    ["20:30", "21:30"],
+    ["04.05. 12:00", "15"],
+    ["1901-12-13 20:45", "2038-01-19 03:14"],
+    ["01.02.2023 17:00", "01:00"],
+    ["01.02.18 05:00", "7"]
+];
+var example_no = Math.floor(Math.random() * from_to_examples.length);
+console.log(from_to_examples.length);
+console.log(example_no);
+$("#announcement_add_from").attr("placeholder", "ex: " + from_to_examples[example_no][0]);
+$("#announcement_add_to").attr("placeholder", "ex: " + from_to_examples[example_no][1]);
 var parse_dates = function(from_str, to_str) {
     from_str = from_str.trim();
     to_str   = to_str.trim();
