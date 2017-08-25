@@ -145,9 +145,11 @@ statuz.update_presence = function() {
         if (users.length == 0) {
             current_presence.text("nobody");
         } else {
-            current_presence.text(users.map(function(user) {
+           var text = users.map(function(user) {
                 return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
-            }).join(", "));
+            }).join(", ");
+           text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
+            current_presence.html(text);
         }
     });
 };

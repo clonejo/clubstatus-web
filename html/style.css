@@ -31,6 +31,10 @@ h1, h2 {
     margin: 0px;
 }
 
+a {
+    color: #bababa;
+}
+
 .box {
     background-color: #0b1b40;
     background-image: url('img/noise.png');
