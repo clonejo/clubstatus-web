@@ -261,8 +261,6 @@ var from_to_examples = [
     ["01.02.18 05:00", "7"]
 ];
 var example_no = Math.floor(Math.random() * from_to_examples.length);
-console.log(from_to_examples.length);
-console.log(example_no);
 $("#announcement_add_from").attr("placeholder", "ex: " + from_to_examples[example_no][0]);
 $("#announcement_add_to").attr("placeholder", "ex: " + from_to_examples[example_no][1]);
 var parse_dates = function(from_str, to_str) {
@@ -402,6 +400,7 @@ var linkToLocalStorageCheckbox = function(key, inputElem) {
 
 linkToLocalStorage("username", "#username");
 linkToLocalStorageCheckbox("auto_refresh", "#auto_refresh");
+linkToLocalStorageCheckbox("refresh_on_tab_visible", "#refresh_on_tab_visible");
 
 var auto_refresher;
 var update_auto_refresh = function() {
@@ -412,6 +411,21 @@ var update_auto_refresh = function() {
 };
 $("#auto_refresh").change(update_auto_refresh);
 update_auto_refresh();
+
+var visibilitychange = function() {
+    if (!document.hidden){
+        statuz.update();
+    }
+}
+var update_refresh_on_tab_visible = function() {
+    if (JSON.parse(localStorage.getItem("refresh_on_tab_visible"))) {
+        document.addEventListener("visibilitychange", visibilitychange);
+    } else {
+        document.removeEventListener("visibilitychange", visibilitychange);
+    }
+}
+$("#refresh_on_tab_visible").change(update_refresh_on_tab_visible);
+update_refresh_on_tab_visible();
 
 var toggleFullScreen = function() {
     if (!document.fullscreenElement &&    // alternative standard method
