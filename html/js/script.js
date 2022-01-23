@@ -141,14 +141,20 @@ statuz.update_log = function() {
 statuz.update_presence = function() {
     $.getJSON(api + "/v0/presence?id=last", function(o) {
         var current_presence = $("#current_presence");
-        var users = o.actions[0].users;
-        if (users.length == 0) {
+        var action = o.actions[0];
+        var users = action.users;
+        if (users.length == 0 && action.anonymous_users < 0.5) {
             current_presence.text("nobody");
+        } else if (users.length == 0) {
+            var text = action.anonymous_users.toFixed(1) + ' anonyme Hackende';
+            current_presence.html(text);
         } else {
-           var text = users.map(function(user) {
+            var text = users.map(function(user) {
+                // U+202F NARROW NO-BREAK SPACE
                 return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
             }).join(", ");
-           text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
+            text += ', ' + action.anonymous_users.toFixed(1) + ' anonyme Hackende';
+            text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
             current_presence.html(text);
         }
     });
