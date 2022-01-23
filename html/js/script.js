@@ -146,14 +146,14 @@ statuz.update_presence = function() {
         if (users.length == 0 && action.anonymous_users < 0.5) {
             current_presence.text("nobody");
         } else if (users.length == 0) {
-            var text = action.anonymous_users.toFixed(1) + ' anonyme Hackende';
+            var text = action.anonymous_users.toFixed(1) + ' anonymous hackers';
             current_presence.html(text);
         } else {
             var text = users.map(function(user) {
                 // U+202F NARROW NO-BREAK SPACE
                 return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
             }).join(", ");
-            text += ', ' + action.anonymous_users.toFixed(1) + ' anonyme Hackende';
+            text += ', ' + action.anonymous_users.toFixed(1) + ' anonymous hackers';
             text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
             current_presence.html(text);
         }
