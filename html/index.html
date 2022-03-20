@@ -6,9 +6,8 @@
         <script src="js/jquery.js"></script>
         <script src="js/moment.js"></script>
         <script src="js/script.js"></script>
-        <meta name="viewport" content="width=720" />
+        <meta name="viewport" content="width=device-width" />
         <link rel="stylesheet" type="text/css" href="style.css" />
-        <link rel="stylesheet" type="text/css" href="style-responsive.css" />
         <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
     </head>
     <body>
@@ -89,19 +88,19 @@
                 <div class="columns">
                     <input id="announcement_modify_aid" type="hidden" />
                     <div class="column label" style="white-space: nowrap;">change announcement:</div>
-                    <div class="column">from:</div>
                     <div class="column">
-                        <input id="announcement_modify_from" type="text" />
+                        from: <input id="announcement_modify_from" type="text" />
                     </div>
-                    <div class="column">to:</div>
                     <div class="column">
-                        <input id="announcement_modify_to"   type="text" />
+                        to: <input id="announcement_modify_to"   type="text" />
                     </div>
                 </div>
                 <div class="columns">
                     <div class="column">note:</div>
-                    <input id="announcement_modify_note" type="text" maxlength="80"
+                    <div class="column grow">
+                        <input id="announcement_modify_note" type="text" maxlength="80"
                            placeholder="Plenum / Talk / Food / Party / 'I'll be there' / …" />
+                    </div>
                     <div class="column">
                         <label ><input id="announcement_modify_public" type="checkbox" />public</label>
                     </div>
@@ -113,21 +112,21 @@
             <div id="announcement_add_box" class="box">
                 <div class="columns">
                     <div class="column label" style="white-space: nowrap;">new announcement:</div>
-                    <div class="column">from:</div>
                     <div class="column">
-                        <input id="announcement_add_from" type="text" />
+                        from: <input id="announcement_add_from" type="text" />
                     </div>
-                    <div class="column">to:</div>
                     <div class="column">
-                        <input id="announcement_add_to"   type="text" />
+                        to: <input id="announcement_add_to"   type="text" />
                     </div>
                 </div>
                 <div class="columns">
                     <div class="column">note:</div>
-                    <input id="announcement_add_note" type="text" maxlength="80"
+                    <div class="column grow">
+                        <input id="announcement_add_note" type="text" maxlength="80"
                            placeholder="Plenum / Talk / Food / Party / 'I'll be there' / …" />
+                    </div>
                     <div class="column">
-                        <label ><input id="announcement_add_public" type="checkbox" />public</label>
+                        <label><input id="announcement_add_public" type="checkbox" />public</label>
                     </div>
                     <input id="announcement_add_submit" type="submit" value="add" />
                 </div>

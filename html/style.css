@@ -1,17 +1,23 @@
 
 /* color palette: http://paletton.com/#uid=75B0Z0kllll5gSNdkuCtmc3Lc2K */
 body {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+
     background-image: url('img/noise.png');
     background-color: #01050f;
     color: #bababa;
     font-family: Sans;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.wrapper {
-    width: 700px;
+@media (min-width: 1300px) {
+    .wrapper {
+        margin: 0px 10px;
+    }
 }
 
 #header {
@@ -41,6 +47,8 @@ a {
     margin: 10px 0px;
     padding: 10px;
     box-shadow: 0px 0px 10px 0px black;
+    max-width: min(calc(100vw - 20px), 700px);
+    overflow-x: auto;
 }
 
 .box:last-child {
@@ -58,6 +66,7 @@ a {
 
 .row {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .row .box {
@@ -70,6 +79,8 @@ a {
 
 .columns {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
     margin: 5px 0px;
 }
@@ -78,6 +89,9 @@ a {
 }
 .columns:last-child {
     margin-bottom: 0px;
+}
+#status_box .columns {
+    justify-content: space-evenly;
 }
 
 .columns * {
@@ -168,7 +182,7 @@ span.status_public {
     width: 100%;
 }
 
-#announcement_add_box input[type=text], #announcement_modify_box input[type=text] {
+#announcement_add_note, #announcement_modify_note {
     width: 100%;
 }
 
@@ -179,9 +193,7 @@ span.status_public {
 table.monospace {
     border-collapse: collapse;
     font-family: monospace;
-}
-table.monospace th {
-    /*text-align: left;*/
+    min-width: 680px;
 }
 table.monospace td {
     padding: 5px;
