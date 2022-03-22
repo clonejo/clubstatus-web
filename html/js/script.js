@@ -216,7 +216,6 @@ statuz.update_announcements = function() {
 
 statuz.update = function() {
     console.log("updating");
-    $("#loading").css("visibility", "visible");
     $("#status_box, #status_change_box, #announcement_box, #log_box").addClass("loading");
 
     var requests = [
@@ -226,7 +225,6 @@ statuz.update = function() {
         statuz.update_announcements()
     ];
     $.when.apply($, requests).then(function() {
-        $("#loading").css("visibility", "hidden");
     });
 
     $.when.apply($, [requests[0], requests[2]]).then(function() {

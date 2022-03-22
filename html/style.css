@@ -29,12 +29,18 @@ body {
     margin-bottom: 0px;
 }
 
-#loading {
-    color: white;
-}
-
 h1, h2 {
     margin: 0px;
+}
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.0em;
+    }
+}
+@media (min-width: 401px) and (max-width: 500px) {
+    h1 {
+        font-size: 1.4em;
+    }
 }
 
 a {
