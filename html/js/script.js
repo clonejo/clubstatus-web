@@ -87,16 +87,7 @@ statuz.update_status = function() {
     $.getJSON(api + "/v0/status/current", function(o) {
         var current_status = $("#current_status");
         current_status.text(o.last.status);
-        if (o.last.status === "closed") {
-            current_status.removeClass();
-            current_status.addClass("closed");
-        } else if (o.last.status === "private") {
-            current_status.removeClass();
-            current_status.addClass("private");
-        } else if (o.last.status === "public") {
-            current_status.removeClass();
-            current_status.addClass("public");
-        }
+        document.querySelector("#current_status").dataset.status = o.last.status;
         $("#current_status_note").text(o.last.note);
         if (o.last.note == "") {
             $("#current_status_note_row").css("display", "none");
@@ -123,7 +114,7 @@ statuz.update_log = function() {
             var row = '<tr>';
             row += "<td>" + action.id + "</td>";
             row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
-            row += '<td><span class="status status_' + action.status + '">'
+            row += '<td><span class="status" data-status="' + action.status + '">'
                 + action.status + "</span></td>";
             row += "<td>by " + $("<div />").text(action.user).html() + "</td>";
             row += '<td class="note">';

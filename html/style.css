@@ -122,13 +122,13 @@ a {
     padding: 10px;
 }
 
-#current_status.closed {
+#current_status[data-status='closed'] {
     color: #a7383e;
 }
-#current_status.private {
+#current_status[data-status='private'] {
     color: #6779a3;
 }
-#current_status.public {
+#current_status[data-status='public'] {
     color: #378b2e;
 }
 
@@ -138,13 +138,13 @@ span.status {
     color: white;
 }
 
-span.status_closed {
+span.status[data-status='closed'] {
     background-color: #a7383e;
 }
-span.status_private {
+span.status[data-status='private'] {
     background-color: #6779a3;
 }
-span.status_public {
+span.status[data-status='public'] {
     background-color: #378b2e;
 }
 
