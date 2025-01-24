@@ -1,0 +1,11 @@
+{
+	debug
+}
+
+:1234 {
+	root * html/
+	reverse_proxy /api/* https://status.aachen.ccc.de {
+		header_up host {upstream_hostport}
+	}
+	file_server
+}
