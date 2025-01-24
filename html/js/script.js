@@ -180,6 +180,9 @@ statuz.update_announcements = function() {
             if (action.note != "") {
                 row += '“' + $("<div/>").text(action.note).html() + "”";
             }
+            if (action.url) {
+                row += " " + $("<a>", { href: action.url }).append('<i class="fa fa-link"></i>')[0].outerHTML;
+            }
             row += '</td>';
             if (action.public) {
                 row += '<td><i class="fa fa-check"></i></td>';
