@@ -11,6 +11,7 @@ statuz.announcement_edit = function(aid) {
     $("#announcement_modify_from").val(moment.unix(action.from).format("L LT"));
     $("#announcement_modify_to"  ).val(moment.unix(action.to  ).format("L LT"));
     $("#announcement_modify_note").val(action.note);
+    $("#announcement_modify_url").val(action.url);
     $("#announcement_modify_public").prop("checked", action.public);
     $("#announcement_modify_box").slideDown();
 };
@@ -29,7 +30,9 @@ statuz.announcement_stop = function(aid) {
             aid: aid,
             from: action.from,
             to: "now",
-            public: action.public
+            public: action.public,
+            note: action.note,
+            url: action.url,
         }),
         method: "PUT",
         success: function(res, status, jqxhr) {
@@ -312,6 +315,7 @@ var announcement_add = function() {
         user = "Hans Acker";
     }
     var note = $("#announcement_add_note").val();
+    var url = $("#announcement_add_url").val() || null;
     var time_range = parse_dates($("#announcement_add_from").val(), $("#announcement_add_to").val());
     var public_ = $("#announcement_add_public").prop("checked");
     $.ajax(api + "/v0", {
@@ -322,7 +326,8 @@ var announcement_add = function() {
             from: time_range[0],
             to: time_range[1],
             public: public_,
-            note: note
+            note: note,
+            url: url,
         }),
         method: "PUT",
         success: function(res, status, jqxhr) {
@@ -341,6 +346,7 @@ var announcement_modify = function() {
         user = "Hans Acker";
     }
     var note = $("#announcement_modify_note").val();
+    var url = $("#announcement_modify_url").val() || null;
     var time_range = parse_dates($("#announcement_modify_from").val(), $("#announcement_modify_to").val());
     var aid = parseInt($("#announcement_modify_aid").val(), 10);
     var public_ = $("#announcement_modify_public").prop("checked");
@@ -353,7 +359,8 @@ var announcement_modify = function() {
             from: time_range[0],
             to: time_range[1],
             public: public_,
-            note: note
+            note: note,
+            url: url,
         }),
         method: "PUT",
         success: function(res, status, jqxhr) {
