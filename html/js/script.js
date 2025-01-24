@@ -183,12 +183,10 @@ statuz.update_announcements = function() {
             if (action.url) {
                 row += " " + $("<a>", { href: action.url }).append('<i class="fa fa-link"></i>')[0].outerHTML;
             }
-            row += '</td>';
             if (action.public) {
-                row += '<td><i class="fa fa-check"></i></td>';
-            } else {
-                row += "<td>&nbsp;</td>";
+                row += ' <i class="fa fa-globe"></i>';
             }
+            row += '</td>';
             row += '<td class="actions">';
             row += '<i class="fa fa-pencil" onclick="statuz.announcement_edit(' + action.aid + ')"></i> ';
             if (begun) {
