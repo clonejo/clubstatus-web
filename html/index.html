@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8" />
         <title>Hackerspace Status</title>
-        <script src="js/jquery.js"></script>
         <script src="js/moment.js"></script>
         <script src="js/script.js"></script>
         <meta name="viewport" content="width=device-width" />
@@ -19,7 +18,7 @@
                                                                size="15" minlength="1" maxlength="15"/>
                 </div>
             </div>
-            <div id="status_box" class="box loading">
+            <div id="status_box" class="box data-box loading">
                 <div class="columns">
                     <div id="current_status"></div>
                     <table id="current_status_details">
@@ -42,7 +41,7 @@
                 </div>
             </div>
 
-            <div id="status_change_box" class="box loading">
+            <div id="status_change_box" class="box data-box loading">
                 <div class="columns">
                     <div class="column label">change status:</div>
                     <div id="status_change_buttons" class="column grow">
@@ -63,7 +62,7 @@
                 </div>
             </div>
 
-            <div id="announcement_box" class="box loading">
+            <div id="announcement_box" class="box data-box loading">
                 <div style="display: flex; justify-content: space-between;">
                     <h2>Announcements</h2>
                     <a href="api/v0/announcement/current.ics">ics</a>
@@ -79,10 +78,31 @@
                         </tr>
                     </thead>
                     <tbody></tbody>
+                    <template id="announcement_row_template">
+                        <tr>
+                            <td>
+                                <i class="fa fa-play"></i>
+                                FROM
+                            </td>
+                            <td>TO</td>
+                            <td>by USER</td>
+                            <td>
+                                <span class="note">“NOTE”</span>
+                                <a><i class="fa fa-link"></i></a>
+                                <i class="fa fa-globe"></i>
+                            </td>
+                            <td class="actions">
+                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-stop"></i>
+                                <i class="fa fa-trash"></i>
+                            </td>
+                        </tr>
+                    </template>
                 </table>
             </div>
 
-            <div id="announcement_modify_box" class="box" hidden>
+            <div id="announcement_modify_box" class="hidable">
+            <div class="box">
                 <div class="columns">
                     <input id="announcement_modify_aid" type="hidden" />
                     <div class="column label" style="white-space: nowrap;">change announcement:</div>
@@ -109,6 +129,7 @@
                     <input id="announcement_modify_submit" type="submit" value="update" />
                     <input id="announcement_modify_cancel" type="submit" value="cancel" />
                 </div>
+            </div>
             </div>
 
             <div id="announcement_add_box" class="box">
@@ -140,13 +161,22 @@
         </div>
 
         <div class="wrapper">
-            <div id="log_box" class="box loading">
+            <div id="log_box" class="box data-box loading">
                 <h2>Log</h2>
                 <table id="log" class="monospace">
                     <thead>
                         <tr><th>#</th><th>Time</th><th>Status</th><th>User</th><th>Note</th>
                     </thead>
                     <tbody></tbody>
+                    <template id="log_row_template">
+                        <tr>
+                            <td>ID</td>
+                            <td>TIME</td>
+                            <td><span class="status">STATUS</span></td>
+                            <td>by USER</td>
+                            <td class="note">“NOTE”</td>
+                        </tr>
+                    </template>
                 </table>
             </div>
             <div class="row">
