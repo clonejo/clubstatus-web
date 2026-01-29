@@ -9,3 +9,13 @@
 	}
 	file_server
 }
+
+:4321 {
+	root * html/
+	header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none';"
+	
+	reverse_proxy /api/* http://localhost:8000 {
+		header_up host {upstream_hostport}
+	}
+	file_server
+}

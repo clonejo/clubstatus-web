@@ -1,29 +1,32 @@
 "use strict";
 
-var api = "/api";
+addEventListener('DOMContentLoaded', () => {
 
-var statuz = {
+const api = "/api";
+
+const statuz = {
     announcements: {}
 };
+
 statuz.announcement_edit = function(aid) {
-    var action = statuz.announcements[aid];
-    $("#announcement_modify_aid").val(aid);
-    $("#announcement_modify_from").val(moment.unix(action.from).format("L LT"));
-    $("#announcement_modify_to"  ).val(moment.unix(action.to  ).format("L LT"));
-    $("#announcement_modify_note").val(action.note);
-    $("#announcement_modify_url").val(action.url);
-    $("#announcement_modify_public").prop("checked", action.public);
-    $("#announcement_modify_box").slideDown();
+    const action = statuz.announcements[aid];
+    document.getElementById("announcement_modify_aid").value = aid;
+    document.getElementById("announcement_modify_from").value = moment.unix(action.from).format("L LT")
+    document.getElementById("announcement_modify_to"  ).value = moment.unix(action.to  ).format("L LT")
+    document.getElementById("announcement_modify_note").value = action.note;
+    document.getElementById("announcement_modify_url").value = action.url;
+    document.getElementById("announcement_modify_public").checked = action.public;
+    document.getElementById("announcement_modify_box").classList.add("open");
 };
 
 statuz.announcement_stop = function(aid) {
-    var action = statuz.announcements[aid];
-    var user = $("#username").val();
+    const action = statuz.announcements[aid];
+    const user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
-    $.ajax(api + "/v0", {
-        data: JSON.stringify({
+    fetch(api + "/v0", {
+        body: JSON.stringify({
             type: "announcement",
             method: "mod",
             user: user,
@@ -34,33 +37,25 @@ statuz.announcement_stop = function(aid) {
             note: action.note,
             url: action.url,
         }),
-        method: "PUT",
-        success: function(res, status, jqxhr) {
-            statuz.update();
-        }
-    });
+        method: "PUT"
+    }).then(() => statuz.update());
 }
 
 statuz.announcement_delete = function(aid) {
-    var user = $("#username").val();
+    const user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
-    $.ajax(api + "/v0", {
-        data: JSON.stringify({
+    fetch(api + "/v0", {
+        body: JSON.stringify({
             type: "announcement",
             method: "del",
             user: user,
             aid: aid
         }),
-        method: "PUT",
-        success: function(res, status, jqxhr) {
-            statuz.update();
-        }
-    });
+        method: "PUT"
+    }).then(() => statuz.update());
 }
-
-$(document).ready(function() {
 
 // am/pm -> 24h and short fromNow
 moment.locale('en-24h', {
@@ -86,171 +81,183 @@ moment.locale('en-24h', {
     }
 });
 
-statuz.update_status = function() {
-    $.getJSON(api + "/v0/status/current", function(o) {
-        var current_status = $("#current_status");
-        current_status.text(o.last.status);
-        document.querySelector("#current_status").dataset.status = o.last.status;
-        $("#current_status_note").text(o.last.note);
-        if (o.last.note == "") {
-            $("#current_status_note_row").css("display", "none");
+statuz.update_status = async function() {
+    const response = await fetch(api + "/v0/status/current");
+    const o =  await response.json();
+    
+    const current_status = document.getElementById("current_status");
+    current_status.textContent = o.last.status;
+    current_status.dataset.status = o.last.status;
+    document.getElementById("current_status_note").textContent = o.last.note;
+    if (o.last.note == "") {
+        document.getElementById("current_status_note_row").style.display = "none";
+    } else {
+        document.getElementById("current_status_note_row").style.display = "flex";
+    }
+    document.getElementById("status_change_note").value = o.last.note;
+    const changed = moment.unix(o.changed.time);
+    const updated = moment.unix(o.last.time);
+    document.getElementById("current_status_changed").textContent =
+        changed.calendar() + " by " + o.changed.user + " (" +
+        changed.fromNow(true) + ")";
+    document.getElementById("current_status_updated").textContent =
+        updated.calendar() + " by " + o.last.user + " (" +
+        updated.fromNow(true) + ")";
+    document.getElementById("status_change_box").classList.remove("loading");
+    // .loading is removed from #status_box when both update_status() and update_presence() are done
+};
+
+statuz.update_log = async function() {
+    const response = await fetch(api + "/v0/status?count=30");
+    const o = await response.json();
+    
+    const log_table = document.querySelector("#log tbody");
+    const template = document.getElementById("log_row_template");
+    log_table.replaceChildren();
+    for (const action of o.actions) {
+        const row = template.content.cloneNode(true).firstElementChild;
+        const cells = row.getElementsByTagName("td");
+        cells[0].textContent = action.id;
+        cells[1].textContent =  moment.unix(action.time).format("ddd, YYYY-MM-DD, LT");
+        const statusSpan = cells[2].getElementsByTagName("span")[0];
+        statusSpan.dataset.status = action.status;
+        statusSpan.textContent = action.status;
+        cells[3].textContent = "by " + action.user;
+        cells[4].textContent = (action.note != "") ?
+            '“' + action.note + "”" : "";
+        log_table.prepend(row);
+    }
+    document.getElementById("log_box").classList.remove("loading");
+};
+
+statuz.update_presence = async function() {
+    const response = await fetch(api + "/v0/presence?id=last");
+    const o = await response.json();
+
+    const action = o.actions[0];
+    const users = action.users;
+    let text;
+    if (users.length == 0 && action.anonymous_users < 0.5) {
+        text = "nobody";
+    } else if (users.length == 0) {
+        text = action.anonymous_users.toFixed(1) + ' anonymous hackers';
+    } else {
+        text = users.map(function(user) {
+            // U+202F NARROW NO-BREAK SPACE
+            return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
+        }).join(", ");
+        text += ', ' + action.anonymous_users.toFixed(1) + ' anonymous hackers';
+        text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
+    }
+    document.getElementById("current_presence").innerHTML = text;
+};
+
+statuz.update_announcements = async function() {
+    const response = await fetch(api + "/v0/announcement/current");
+    const o = await response.json();
+    
+    const announcements_table = document.querySelector("#announcements tbody");
+    const template = document.getElementById("announcement_row_template");
+    statuz.announcements = {};
+    announcements_table.replaceChildren();
+    for (const action of o.actions) {
+        statuz.announcements[action.aid] = action;
+        const calendarFormats = {
+            sameElse: "ddd, YYYY-MM-DD, LT"
+        };
+        const from = moment.unix(action.from);
+        const to = moment.unix(action.to);
+        const begun = !from.isAfter();
+        const row = template.content.cloneNode(true).firstElementChild;
+        if (begun) {
+            row.classList.add("begun");
+        }
+        
+        const cells = row.getElementsByTagName("td");
+        if (!begun) {
+            cells[0].removeChild(cells[0].getElementsByTagName("i")[0]);
+        }
+        cells[0].lastChild.textContent = " " + from.calendar(null, calendarFormats);
+        cells[1].textContent = to.calendar(null, calendarFormats);
+        cells[2].textContent = "by " + action.user;
+        const noteSpan = cells[3].getElementsByTagName("span")[0];
+        if (action.note != "") {
+            noteSpan.textContent = "“" + action.note + "”";
         } else {
-            $("#current_status_note_row").css("display", "flex");
+            cells[3].removeChild(noteSpan);
         }
-        $("#status_change_note").val(o.last.note);
-        var changed = moment.unix(o.changed.time);
-        var updated = moment.unix(o.last.time);
-        $("#current_status_changed").text(changed.calendar() + " by " + o.changed.user
-                + " (" + changed.fromNow(true) + ")");
-        $("#current_status_updated").text(updated.calendar() + " by " + o.last.user
-                + " (" + updated.fromNow(true) + ")");
-        $("#status_change_box").removeClass("loading");
-        // .loading is removed from #status_box when both update_status() and update_presence() are done
-    });
-};
-
-statuz.update_log = function() {
-    $.getJSON(api + "/v0/status?count=30", function(o) {
-        var log_table = $("#log tbody");
-        log_table.empty();
-        $.each(o.actions, function(index, action) {
-            var row = '<tr>';
-            row += "<td>" + action.id + "</td>";
-            row += "<td>" + moment.unix(action.time).format("ddd, YYYY-MM-DD, LT") + "</td>";
-            row += '<td><span class="status" data-status="' + action.status + '">'
-                + action.status + "</span></td>";
-            row += "<td>by " + $("<div />").text(action.user).html() + "</td>";
-            row += '<td class="note">';
-            if (action.note != "") {
-                row += '“' + $("<div/>").text(action.note).html() + "”";
-            }
-            row += '</td>';
-            row += "</tr>";
-            log_table.prepend(row);
-        });
-        $("#log_box").removeClass("loading");
-    })
-};
-
-statuz.update_presence = function() {
-    $.getJSON(api + "/v0/presence?id=last", function(o) {
-        var current_presence = $("#current_presence");
-        var action = o.actions[0];
-        var users = action.users;
-        if (users.length == 0 && action.anonymous_users < 0.5) {
-            current_presence.text("nobody");
-        } else if (users.length == 0) {
-            var text = action.anonymous_users.toFixed(1) + ' anonymous hackers';
-            current_presence.html(text);
+        const linkIcon = cells[3].getElementsByTagName("a")[0];
+        if (action.url) {
+            linkIcon.href = action.url;
         } else {
-            var text = users.map(function(user) {
-                // U+202F NARROW NO-BREAK SPACE
-                return user.name + " (" + moment.unix(user.since).fromNow(true) + ")";
-            }).join(", ");
-            text += ', ' + action.anonymous_users.toFixed(1) + ' anonymous hackers';
-            text += ', <a href="https://wiki.aachen.ccc.de/doku.php?id=projekte:clubstatus">you?</a>';
-            current_presence.html(text);
+            cells[3].removeChild(linkIcon);
         }
-    });
-};
-
-statuz.update_announcements = function() {
-    $.getJSON(api + "/v0/announcement/current", function(o) {
-        var announcements_table = $("#announcements tbody");
-        statuz.announcements = {};
-        announcements_table.empty();
-        $.each(o.actions, function(index, action) {
-            statuz.announcements[action.aid] = action;
-            var calendarFormats = {
-                sameElse: "ddd, YYYY-MM-DD, LT"
-            };
-            var from = moment.unix(action.from);
-            var to = moment.unix(action.to);
-            var begun = !from.isAfter();
-            if (begun) {
-                var row = '<tr class="begun">';
-            } else {
-                var row = '<tr>';
-            }
-            row += '<td>';
-            if (begun) {
-                row += '<i class="fa fa-play"></i> ';
-            }
-            row += from.calendar(null, calendarFormats) + "</td>";
-            row += "<td>" + to.calendar(null, calendarFormats) + "</td>";
-            row += "<td>by " + $("<div />").text(action.user).html() + "</td>";
-            row += '<td class="note">';
-            if (action.note != "") {
-                row += '“' + $("<div/>").text(action.note).html() + "”";
-            }
-            if (action.url) {
-                row += " " + $("<a>", { href: action.url }).append('<i class="fa fa-link"></i>')[0].outerHTML;
-            }
-            if (action.public) {
-                row += ' <i class="fa fa-globe"></i>';
-            }
-            row += '</td>';
-            row += '<td class="actions">';
-            row += '<i class="fa fa-pencil" onclick="statuz.announcement_edit(' + action.aid + ')"></i> ';
-            if (begun) {
-                row += '<i class="fa fa-stop"  onclick="statuz.announcement_stop(' + action.aid + ')"></i>';
-            } else {
-                row += '<i class="fa fa-trash"  onclick="statuz.announcement_delete(' + action.aid + ')"></i>';
-            }
-            row += '</td>';
-            row += "</tr>";
-            announcements_table.append(row);
-        });
-        if (o.actions.length == 0) {
-            var row = '<tr><td colspan="6">no current or upcoming announcements</td></tr>';
-            announcements_table.append(row);
+        const publicIcon = cells[3].getElementsByClassName("fa-globe")[0];
+        if (!action.public) {
+            cells[3].removeChild(publicIcon);
         }
-        $("#announcement_box").removeClass("loading");
-    })
+        row.getElementsByClassName("fa-pencil")[0].addEventListener("click", () =>
+            statuz.announcement_edit(action.aid));
+        const stopIcon = row.getElementsByClassName("fa-stop")[0];
+        const trashIcon = row.getElementsByClassName("fa-trash")[0];
+        if (begun) {
+            stopIcon.addEventListener("click", () =>
+                statuz.announcement_stop(action.aid));
+            cells[4].removeChild(trashIcon);
+        } else {
+            trashIcon.addEventListener("click", () =>
+                statuz.announcement_delete(action.aid));
+            cells[4].removeChild(stopIcon);
+        }
+        announcements_table.appendChild(row);
+    }
+    if (o.actions.length == 0) {
+        const row = '<tr><td colspan="6">no current or upcoming announcements</td></tr>';
+        announcements_table.innerHTML = row;
+    }
+    document.getElementById("announcement_box").classList.remove("loading");
 };
 
 statuz.update = function() {
     console.log("updating");
-    $("#status_box, #status_change_box, #announcement_box, #log_box").addClass("loading");
+    for (const item of document.getElementsByClassName("data-box")) {
+        item.classList.add("loading");
+    }
 
-    var requests = [
+    const requests = [
         statuz.update_status(),
         statuz.update_log(),
         statuz.update_presence(),
         statuz.update_announcements()
     ];
-    $.when.apply($, requests).then(function() {
-    });
 
-    $.when.apply($, [requests[0], requests[2]]).then(function() {
-        $("#status_box").removeClass("loading");
-    });
+    Promise.allSettled([requests[0], requests[2]]).then(() =>
+        document.getElementById("status_box").classList.remove("loading"));
 };
 
-var status_change = function(status) {
-    $("#status_change_box").css("visibility", "hidden");
-    var user = $("#username").val();
+const status_change = function(status) {
+    document.getElementById("status_change_box").style.visibility = "hidden";
+    let user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
-    var note = $("#status_change_note").val();
-    $.ajax(api + "/v0", {
-        data: JSON.stringify({
+    const note = document.getElementById("status_change_note").value;
+    fetch(api + "/v0", {
+        body: JSON.stringify({
             type: "status",
             user: user,
             status: status,
             note: note
         }),
-        method: "PUT",
-        success: function(res, status, jqxhr) {
-            statuz.update();
-            $("#status_change_box").css("visibility", "visible");
-        }
+        method: "PUT"
+    }).then(() => {
+        statuz.update();
+        document.getElementById("status_change_box").style.visibility = "visible";
     });
 };
 
 
-var from_to_examples = [
+const from_to_examples = [
     ["now", "23:42"],
     ["20", "23:42"],
     ["20:30", "21:30"],
@@ -259,15 +266,15 @@ var from_to_examples = [
     ["01.02.2023 17:00", "01:00"],
     ["01.02.18 05:00", "7"]
 ];
-var example_no = Math.floor(Math.random() * from_to_examples.length);
-$("#announcement_add_from").attr("placeholder", "ex: " + from_to_examples[example_no][0]);
-$("#announcement_add_to").attr("placeholder", "ex: " + from_to_examples[example_no][1]);
-var parse_dates = function(from_str, to_str) {
+const example_no = Math.floor(Math.random() * from_to_examples.length);
+document.getElementById("announcement_add_from").placeholder = "ex: " + from_to_examples[example_no][0];
+document.getElementById("announcement_add_to"  ).placeholder = "ex: " + from_to_examples[example_no][1];
+const parse_dates = (from_str, to_str) => {
     from_str = from_str.trim();
     to_str   = to_str.trim();
-    var from_date_included = from_str.indexOf(" ") > -1;
-    var to_date_included   = to_str.indexOf(" ") > -1;
-    var formats = [
+    const from_date_included = from_str.indexOf(" ") > -1;
+    const to_date_included   = to_str.indexOf(" ") > -1;
+    const formats = [
         "H",
         "H:mm",
         "D.M. H:mm",
@@ -275,16 +282,18 @@ var parse_dates = function(from_str, to_str) {
         "D.M.YYYY H:mm",
         "YYYY-M-D H:mm"
     ];
-    var now  = moment();
+    const now  = moment();
+    let from;
     if (from_str == "now" || from_str == "") {
-        var from = moment();
+        from = moment();
     } else {
-        var from = moment(from_str, formats);
+        from = moment(from_str, formats);
     }
+    let to;
     if (to_str == "now" || to_str == "") {
-        var to = moment();
+        to = moment();
     } else {
-        var to   = moment(to_str  , formats);
+        to = moment(to_str, formats);
     }
     if (!from_date_included && from.isBefore(now)) {
         from.add(1, "days");
@@ -297,29 +306,31 @@ var parse_dates = function(from_str, to_str) {
             to.add(1, "days");
         }
     }
-    from_ret = parseInt(from.format("X"), 10),
-    to_ret   = parseInt(to.format("X")  , 10)
+    let from_ret = parseInt(from.format("X"), 10);
+    let to_ret   = parseInt(to.format("X")  , 10);
     if (from_str == "now" || from_str == "") {
-        var from_ret = "now";
+        from_ret = "now";
     }
     if (to_str == "now" || to_str == "") {
-        var to_ret = "now";
+        to_ret = "now";
     }
     return [from_ret, to_ret];
 }
 
-var announcement_add = function() {
-    $("#announcement_add_box").css("visibility", "hidden");
-    var user = $("#username").val();
+const announcement_add = () => {
+    document.getElementById("announcement_add_box").style.visibility = "hidden";
+    const user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
-    var note = $("#announcement_add_note").val();
-    var url = $("#announcement_add_url").val() || null;
-    var time_range = parse_dates($("#announcement_add_from").val(), $("#announcement_add_to").val());
-    var public_ = $("#announcement_add_public").prop("checked");
-    $.ajax(api + "/v0", {
-        data: JSON.stringify({
+    const note = document.getElementById("announcement_add_note").value;
+    const url = document.getElementById("announcement_add_url").value || null;
+    const time_range = parse_dates(
+        document.getElementById("announcement_add_from").value,
+        document.getElementById("announcement_add_to").value);
+    const public_ = document.getElementById("announcement_add_public").checked;
+    fetch(api + "/v0", {
+        body: JSON.stringify({
             type: "announcement",
             method: "new",
             user: user,
@@ -330,28 +341,29 @@ var announcement_add = function() {
             url: url,
         }),
         method: "PUT",
-        success: function(res, status, jqxhr) {
-            statuz.update();
-            $("#announcement_add_box input[type=text]").val("");
-            $("#announcement_add_public").prop("checked", false);
-            $("#announcement_add_box").css("visibility", "visible");
-        }
+    }).then(() => {
+        statuz.update();
+        document.querySelector("#announcement_add_box input[type=text]").value = "";
+        document.getElementById("announcement_add_public").checked = false;
+        document.getElementById("announcement_add_box").style.visibility = "visible";
     });
 };
 
-var announcement_modify = function() {
-    $("#announcement_modify_box").hide();
-    var user = $("#username").val();
+const announcement_modify = () => {
+    document.getElementById("announcement_modify_box").classList.remove("open");
+    const user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
-    var note = $("#announcement_modify_note").val();
-    var url = $("#announcement_modify_url").val() || null;
-    var time_range = parse_dates($("#announcement_modify_from").val(), $("#announcement_modify_to").val());
-    var aid = parseInt($("#announcement_modify_aid").val(), 10);
-    var public_ = $("#announcement_modify_public").prop("checked");
-    $.ajax(api + "/v0", {
-        data: JSON.stringify({
+    const note = document.getElementById("announcement_modify_note").value;
+    const url = document.getElementById("announcement_modify_url").value || null;
+    const time_range = parse_dates(
+        document.getElementById("announcement_modify_from").value,
+        document.getElementById("announcement_modify_to").value);
+    const aid = parseInt(document.getElementById("announcement_modify_aid").value, 10);
+    const public_ = document.getElementById("announcement_modify_public").checked;
+    fetch(api + "/v0", {
+        body: JSON.stringify({
             type: "announcement",
             method: "mod",
             aid: aid,
@@ -363,98 +375,75 @@ var announcement_modify = function() {
             url: url,
         }),
         method: "PUT",
-        success: function(res, status, jqxhr) {
-            statuz.update();
-        }
-    });
+    }).then(() => statuz.update());
 };
 
 // debug:
-$("#header h1").click(function() { statuz.update() });
+document.querySelector("#header h1").addEventListener("click", () => statuz.update());
 
-$("#status_change_public" ).click(function(ev) { status_change("public" ); });
-$("#status_change_private").click(function(ev) { status_change("private"); });
-$("#status_change_closed" ).click(function(ev) { status_change("closed" ); });
+document.getElementById("status_change_public" ).addEventListener("click", () => status_change("public" ));
+document.getElementById("status_change_private").addEventListener("click", () => status_change("private"));
+document.getElementById("status_change_closed" ).addEventListener("click", () => status_change("closed" ));
 
-$("#status_change_note_clear").click(function(ev) {
-    $("#status_change_note").val("");
-});
+document.getElementById("status_change_note_clear").addEventListener("click",
+    () => document.getElementById("status_change_note").value = "");
 
-$("#announcement_add_submit").click(function(ev) { announcement_add() });
-$("#announcement_modify_submit").click(function(ev) { announcement_modify() });
-$("#announcement_modify_cancel").click(function(ev) {
-    $("#announcement_modify_box").slideUp();
-});
+document.getElementById("announcement_add_submit").addEventListener("click", () => announcement_add());
+document.getElementById("announcement_modify_submit").addEventListener("click", () => announcement_modify());
+document.getElementById("announcement_modify_cancel").addEventListener("click", () =>
+    document.getElementById("announcement_modify_box").classList.remove("open"));
 
-var linkToLocalStorage = function(key, inputElem) {
-    var inputElem = $(inputElem);
-    inputElem.val(localStorage.getItem(key));
-    inputElem.focusout(function() {
-        localStorage.setItem(key, inputElem.val());
-    });
+const linkToLocalStorage = (key, id) => {
+    const inputElem = document.getElementById(id);
+    inputElem.value = localStorage.getItem(key);
+    inputElem.addEventListener("focusout", () =>
+        localStorage.setItem(key, inputElem.value));
 };
-var linkToLocalStorageCheckbox = function(key, inputElem) {
-    var inputElem = $(inputElem);
-    inputElem.prop("checked", JSON.parse(localStorage.getItem(key)));
-    inputElem.change(function() {
-        localStorage.setItem(key, inputElem.prop("checked"));
+const linkToLocalStorageCheckbox = (key, id) => {
+    const inputElem = document.getElementById(id);
+    inputElem.checked = JSON.parse(localStorage.getItem(key));
+    inputElem.addEventListener("change", () => {
+        localStorage.setItem(key, inputElem.checked);
     });
 };
 
-linkToLocalStorage("username", "#username");
-linkToLocalStorageCheckbox("auto_refresh", "#auto_refresh");
-linkToLocalStorageCheckbox("refresh_on_tab_visible", "#refresh_on_tab_visible");
+linkToLocalStorage("username", "username");
+linkToLocalStorageCheckbox("auto_refresh", "auto_refresh");
+linkToLocalStorageCheckbox("refresh_on_tab_visible", "refresh_on_tab_visible");
 
-var auto_refresher;
-var update_auto_refresh = function() {
+let auto_refresher;
+const update_auto_refresh = () => {
     clearInterval(auto_refresher);
     if (JSON.parse(localStorage.getItem("auto_refresh"))) {
         auto_refresher = setInterval(statuz.update, 5*60*1000);
     }
 };
-$("#auto_refresh").change(update_auto_refresh);
+document.getElementById("auto_refresh").addEventListener("change", update_auto_refresh);
 update_auto_refresh();
 
-var visibilitychange = function() {
+const visibilitychange = function() {
     if (!document.hidden){
         statuz.update();
     }
 }
-var update_refresh_on_tab_visible = function() {
+const update_refresh_on_tab_visible = () => {
     if (JSON.parse(localStorage.getItem("refresh_on_tab_visible"))) {
         document.addEventListener("visibilitychange", visibilitychange);
     } else {
         document.removeEventListener("visibilitychange", visibilitychange);
     }
 }
-$("#refresh_on_tab_visible").change(update_refresh_on_tab_visible);
+document.getElementById("refresh_on_tab_visible").addEventListener("change", update_refresh_on_tab_visible);
 update_refresh_on_tab_visible();
 
-var toggleFullScreen = function() {
-    if (!document.fullscreenElement &&    // alternative standard method
-            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-            document.documentElement.msRequestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-            document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
+const toggleFullScreen = () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        document.documentElement.requestFullscreen();
     }
 }
-$("#fullscreen").click(toggleFullScreen);
+document.getElementById("fullscreen").addEventListener("click", toggleFullScreen);
 
 statuz.update();
 });

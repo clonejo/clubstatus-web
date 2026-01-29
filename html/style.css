@@ -67,7 +67,16 @@ a {
 
 .box.loading {
     filter: opacity(50%) grayscale(60%) blur(0.25px);
-    -webkit-filter: opacity(50%) grayscale(60%) blur(0.25px);
+}
+
+.hidable {
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    max-height: 0;
+}
+
+.hidable.open {
+    max-height: 1000px;
 }
 
 .row {
@@ -218,7 +227,7 @@ table.monospace tr td {
 #log td:nth-child(3), #announcements td:nth-child(5) {
     text-align: center;
 }
-#log td:nth-child(5), #announcements td:nth-child(4) {
+#note {
     white-space: pre-wrap;
     word-break: break-all;
 }
