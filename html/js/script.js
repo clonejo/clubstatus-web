@@ -21,7 +21,7 @@ statuz.announcement_edit = function(aid) {
 
 statuz.announcement_stop = function(aid) {
     const action = statuz.announcements[aid];
-    const user = document.getElementById("username").value;
+    let user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
@@ -42,7 +42,7 @@ statuz.announcement_stop = function(aid) {
 }
 
 statuz.announcement_delete = function(aid) {
-    const user = document.getElementById("username").value;
+    let user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
@@ -319,7 +319,7 @@ const parse_dates = (from_str, to_str) => {
 
 const announcement_add = () => {
     document.getElementById("announcement_add_box").style.visibility = "hidden";
-    const user = document.getElementById("username").value;
+    let user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
@@ -351,7 +351,7 @@ const announcement_add = () => {
 
 const announcement_modify = () => {
     document.getElementById("announcement_modify_box").classList.remove("open");
-    const user = document.getElementById("username").value;
+    let user = document.getElementById("username").value;
     if (user == "") {
         user = "Hans Acker";
     }
